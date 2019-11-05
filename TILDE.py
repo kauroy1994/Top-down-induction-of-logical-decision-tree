@@ -3,6 +3,7 @@ from itertools import product
 from copy import deepcopy
 from Prover import Prover
 from math import log2
+from statistics import pvariance,mean
 
 
 def entropy(bool_list):
@@ -185,6 +186,7 @@ class Node(object):
         n = len(example_list)
         true_examples = {}
         false_examples = {}
+        score_val = 0.0
         
         Prover.rule = clause
         Prover.facts = data
@@ -205,8 +207,22 @@ class Node(object):
             left_entropy = entropy(list(true_examples.values()))
             right_entropy = entropy(list(false_examples.values()))
             ig = (nt*left_entropy)/n + (nf*right_entropy)/n
+            score_val = ig
+        elif Node.score == "WV":
+            left_variance = 0
+            try:
+                left_variance = pvariance(list(true_examples.values()))
+            except:
+                left_variance = 0
+            right_variance = 0
+            try:
+                right_variance = pvariance(list(false_examples.values()))
+            except:
+                right_variance = 0
+            wv = (nt*left_variance)/n + (nf*right_variance)/n
+            score_val = wv
 
-        return ((ig,true_examples,false_examples))
+        return ((score_val,true_examples,false_examples))
         
     def expand(self):
         """scores all clauses with test conditions
@@ -307,19 +323,19 @@ class TILDE(object):
                 left_node_clause = str(left_node)
                 if self.typ == "classification":
                     self.clauses.append((left_node_clause,sum(list(left_node.examples.values()))/len(left_node.examples)))
+                elif self.typ == "regression":
+                    self.clauses.append((left_node_clause,mean(list(left_node.examples.values()))))
                 right_node_clause = str(right_node)
                 if self.typ == "classification":
                     self.clauses.append((right_node_clause,sum(list(right_node.examples.values()))/len(right_node.examples)))
-
+                elif self.typ == "regression":
+                    self.clauses.append((right_node_clause,mean(list(right_node.examples.values()))))
             #if not push right and left child for expansion if there are examples there
             else:
                 if right_node.examples:
                     stack.append(right_node)
                 if left_node.examples:
                     stack.append(left_node)
-
-        print (self.clauses)
-        input()
 
     def infer(self,data,example):
         """infers value of example
@@ -335,12 +351,21 @@ class TILDE(object):
             
             
 #===========TEST-CASE-1=================
+'''
 if __name__ == '__main__':
-    x = TILDE()
+    x = TILDE(typ="regression",score="WV")
+    pos=['h(m1)','h(m2)','h(m4)','h(m6)']
+    neg=['h(m3)','h(m5)','h(m7)']
+    examples = {}
+    for ex in pos:
+        examples[ex] = 1
+    for ex in neg:
+        examples[ex] = -1
     x.learn(['o(m1,d1)','r(m1,w1,st)','o(m2,d2)','r(m2,w2,st)','o(m3,d3)','r(m3,w3,st)','o(m4,d4)','r(m4,w4,lt)','r(m5,w5,st)','r(m6,w6,lt)','r(m7,w7,lt)'],
             ['h(+man)','o(+man,-dog)','r(+man,-woman,#term)'],
             'h',
-            pos=['h(m1)','h(m2)','h(m4)','h(m6)'],
-            neg=['h(m3)','h(m5)','h(m7)'])
+            examples = examples)
     print (x.infer(['o(m1,d1)','r(m1,w1,st)','o(m2,d2)','r(m2,w2,st)','o(m3,d3)','r(m3,w3,st)','o(m4,d4)','r(m4,w4,lt)','r(m5,w5,st)','r(m6,w6,lt)','r(m7,w7,lt)'],
                    'h(m1)'))
+
+'''
