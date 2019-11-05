@@ -228,7 +228,6 @@ class Node(object):
         """scores all clauses with test conditions
            and expands on best test
         """
-        print ("expanding node at position "+str(self.p)+" and depth "+str(self.depth))
         conditions_and_var_types = self.find_test_conditions(self.bk)
         child_bk = []
         test_conditions_and_modes = conditions_and_var_types[0]
@@ -255,8 +254,6 @@ class Node(object):
         min_score = min(scores)
         index = scores.index(min_score)
         self.best_condition = test_conditions[index]
-        print ("best_split found is "+str(self.best_condition)+" with score "+str(min_score))
-        input()
         mode_to_remove = modes[index]
 
         #remove tested mode from child bk
@@ -348,24 +345,3 @@ class TILDE(object):
             value = clause[1]
             if Prover.prove_rule(example):
                 return value
-            
-            
-#===========TEST-CASE-1=================
-'''
-if __name__ == '__main__':
-    x = TILDE(typ="regression",score="WV")
-    pos=['h(m1)','h(m2)','h(m4)','h(m6)']
-    neg=['h(m3)','h(m5)','h(m7)']
-    examples = {}
-    for ex in pos:
-        examples[ex] = 1
-    for ex in neg:
-        examples[ex] = -1
-    x.learn(['o(m1,d1)','r(m1,w1,st)','o(m2,d2)','r(m2,w2,st)','o(m3,d3)','r(m3,w3,st)','o(m4,d4)','r(m4,w4,lt)','r(m5,w5,st)','r(m6,w6,lt)','r(m7,w7,lt)'],
-            ['h(+man)','o(+man,-dog)','r(+man,-woman,#term)'],
-            'h',
-            examples = examples)
-    print (x.infer(['o(m1,d1)','r(m1,w1,st)','o(m2,d2)','r(m2,w2,st)','o(m3,d3)','r(m3,w3,st)','o(m4,d4)','r(m4,w4,lt)','r(m5,w5,st)','r(m6,w6,lt)','r(m7,w7,lt)'],
-                   'h(m1)'))
-
-'''
