@@ -219,6 +219,7 @@ class Node(object):
                 right_variance = pvariance(list(false_examples.values()))
             except:
                 right_variance = 0
+                
             wv = (nt*left_variance)/n + (nf*right_variance)/n
             score_val = wv
 
@@ -228,6 +229,7 @@ class Node(object):
         """scores all clauses with test conditions
            and expands on best test
         """
+        
         conditions_and_var_types = self.find_test_conditions(self.bk)
         child_bk = []
         test_conditions_and_modes = conditions_and_var_types[0]
@@ -319,14 +321,18 @@ class TILDE(object):
             if (top_node.depth + 1 == self.max_depth) or round(score,5) == 0.0:
                 left_node_clause = str(left_node)
                 if self.typ == "classification":
-                    self.clauses.append((left_node_clause,sum(list(left_node.examples.values()))/len(left_node.examples)))
+                    if left_node.examples:
+                        self.clauses.append((left_node_clause,sum(list(left_node.examples.values()))/len(left_node.examples)))
                 elif self.typ == "regression":
-                    self.clauses.append((left_node_clause,mean(list(left_node.examples.values()))))
+                    if left_node.examples:
+                        self.clauses.append((left_node_clause,mean(list(left_node.examples.values()))))
                 right_node_clause = str(right_node)
                 if self.typ == "classification":
-                    self.clauses.append((right_node_clause,sum(list(right_node.examples.values()))/len(right_node.examples)))
+                    if right_node.examples:
+                        self.clauses.append((right_node_clause,sum(list(right_node.examples.values()))/len(right_node.examples)))
                 elif self.typ == "regression":
-                    self.clauses.append((right_node_clause,mean(list(right_node.examples.values()))))
+                    if right_node.examples:
+                        self.clauses.append((right_node_clause,mean(list(right_node.examples.values()))))
             #if not push right and left child for expansion if there are examples there
             else:
                 if right_node.examples:
@@ -339,6 +345,7 @@ class TILDE(object):
            from learned target tree
         """
 
+        
         Prover.facts = data
         for clause in self.clauses:
             Prover.rule = clause[0]
