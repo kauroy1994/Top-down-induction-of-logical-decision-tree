@@ -129,6 +129,11 @@ class Prover(object):
 
         facts = Prover.facts
         rule = Prover.rule
+        
+        #if no rule body then trivially true
+        if not rule.split(':-')[1]:
+            return True
+        
         #assume example is true
         proved = True
         
