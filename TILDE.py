@@ -124,7 +124,7 @@ class Node(object):
                 #if '-' instantiate with new var not in clause
                 elif spec[0] == '-':
                     typ = spec[1:]
-                    for var in PhiMap.all_vars:
+                    for var in Node.all_vars:
                         seen = False
                         if ((var in node_var_types) and (node_var_types[var] == typ)) or ((var in var_types)):
                             seen = True
