@@ -35,8 +35,6 @@ class Node(object):
            and initializes types for variables
            based on mode specification
         """
-
-        
     
     def __init__(self,facts,examples,bk,depth = 0,p="root",parent="root",var_types={}):
         """stores data for finding best condition
@@ -124,14 +122,20 @@ class Node(object):
                 #if '-' instantiate with new var not in clause
                 elif spec[0] == '-':
                     typ = spec[1:]
+
+                    seen = False
                     for var in Node.all_vars:
-                        seen = False
-                        if ((var in node_var_types) and (node_var_types[var] == typ)) or ((var in var_types)):
+                        if (var in children_var_types) and (children_var_types[var] == typ) and (var not in self.var_types):
                             seen = True
-                        if not seen:
                             args[i].append(var)
-                            node_var_types[var] = typ
                             break
+
+                    if not seen:
+                        for new_var in Node.all_vars:
+                            if new_var not in children_var_types:
+                                args[i].append(new_var)
+                                children_var_types[new_var] = typ
+                                break
                 
                 #if '#' collect all constants from facts at this position
                 elif spec[0] == '#':
@@ -252,9 +256,7 @@ class Node(object):
         self.best_condition = test_conditions[index]
         mode_to_remove = modes[index]
 
-        #remove tested mode from child bk,
-        #This may not be best strategy to avoid redundancy,
-        #Needs to be revised
+        #remove tested mode from child bk
         for mode in self.bk:
             if mode != mode_to_remove:
                 child_bk.append(mode)
@@ -317,18 +319,14 @@ class TILDE(object):
             if (top_node.depth + 1 == self.max_depth) or round(score,5) == 0.0:
                 left_node_clause = str(left_node)
                 if self.typ == "classification":
-                    if left_node.examples:
-                        self.clauses.append((left_node_clause,sum(list(left_node.examples.values()))/len(left_node.examples)))
+                    self.clauses.append((left_node_clause,sum(list(left_node.examples.values()))/len(left_node.examples)))
                 elif self.typ == "regression":
-                    if left_node.examples:
-                        self.clauses.append((left_node_clause,mean(list(left_node.examples.values()))))
+                    self.clauses.append((left_node_clause,mean(list(left_node.examples.values()))))
                 right_node_clause = str(right_node)
                 if self.typ == "classification":
-                    if right_node.examples:
-                        self.clauses.append((right_node_clause,sum(list(right_node.examples.values()))/len(right_node.examples)))
+                    self.clauses.append((right_node_clause,sum(list(right_node.examples.values()))/len(right_node.examples)))
                 elif self.typ == "regression":
-                    if right_node.examples:
-                        self.clauses.append((right_node_clause,mean(list(right_node.examples.values()))))
+                    self.clauses.append((right_node_clause,mean(list(right_node.examples.values()))))
             #if not push right and left child for expansion if there are examples there
             else:
                 if right_node.examples:

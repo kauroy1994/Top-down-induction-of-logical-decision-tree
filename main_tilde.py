@@ -11,7 +11,8 @@ def classify():
     """
 
     tree = TILDE()
-
+    
+    '''
     print ("""shows an example of classification
 
            this is data about men,women and dogs
@@ -39,6 +40,19 @@ def classify():
     test_data = train_data #cheating but you can add your own data
     test_example = train_pos[0] #just picking one example to show how it works
     infered_value = tree.infer(test_data,test_example)
+    '''
+
+    train_data = ['edge_center1(wh,or,wh)','edge_center1(wh,bl,y)']
+    train_pos = ['center1(wh,or)']
+    train_neg = ['center1(wh,bl)']
+    target = 'center1'
+    bk = ['center1(+piece,+piece)',
+          'edge_center1(+piece,+piece,-piece)',
+          'edge_center1(+piece,+piece,+piece)']
+
+    tree.learn(train_data,bk,target,pos=train_pos,neg=train_neg)
+    print ("\nlearned ordered tree clauses are:\n")
+    print (tree.clauses)
 
 def regress():
     """shows an example of regression
@@ -51,7 +65,7 @@ def regress():
        r(man,woman,term) means man is in relationship with woman for term length
 
     """
-
+    
     print ("""shows an example of regression
 
            value for positive assumed 1 and negative -1 to demo regression
@@ -95,11 +109,12 @@ def regress():
     test_example = train_pos[0] #just picking one example to show how it works
 
     infered_value = tree.infer(test_data,test_example)
+    
 
 if __name__ == '__main__':
 
     classify()
-    print ("="*80)
-    regress()
+    #print ("="*80)
+    #regress()
     
                
