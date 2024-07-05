@@ -1,4 +1,4 @@
-## Top-down-induction-of-logical-decision-tree
+## Top-down induction of first-order logical decision trees
 
 # Implementation Information
 TILDE tree implementation for classification and regression based on the paper:
